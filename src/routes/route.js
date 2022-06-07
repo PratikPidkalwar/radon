@@ -1,19 +1,59 @@
+// const express = require('express');
+// const router = express.Router();
+// // const UserModel= require("../models/userModel.js")
+// // const UserController = require("../controllers/userController")
+// const BookController = require("../controllers/bookController")
+
+// router.get("/test-me", function(req, res) {
+//     res.send("My first ever api!")
+// })
+
+// // router.post("/createUser", UserController.createUser)
+
+// // router.get("/getUsersData", UserController.getUsersData)
+
+// router.post("/createBook", BookController.createBook)
+
+// router.get("/getBooksData", BookController.getBooksData)
+
+// module.exports = router;
 const express = require('express');
 const router = express.Router();
 // const UserModel= require("../models/userModel.js")
-const UserController= require("../controllers/userController")
-const BookController= require("../controllers/bookController")
+// const UserController= require("../controllers/userController")
+const BookController = require("../controllers/bookController")
 
-router.get("/test-me", function (req, res) {
+router.get("/test-me", function(req, res) {
     res.send("My first ever api!")
 })
+router.post("/createBook", BookController.createBook)
 
-router.post("/createUser", UserController.createUser  )
+router.get("/bookList", BookController.bookList)
 
-router.get("/getUsersData", UserController.getUsersData)
+router.get("/getBooksInYear", BookController.getBooksInYear)
 
-router.post("/createBook", BookController.createBook  )
+router.get("/getXINRBooks", BookController.getXINRBooks)
 
-router.get("/getBooksData", BookController.getBooksData)
+router.get("/getParticularBooks", BookController.getParticularBooks)
 
+router.get("/getRandomBooks", BookController.getRandomBooks)
 module.exports = router;
+
+// router.post("/createBook", BookController.createBook)
+
+// router.get("/getBooksInYear", BookController.getBooksInYear)
+
+// router.get("/bookList", BookController.bookList)
+
+// router.get("/getParticularBooks", BookController.getParticularBooks)
+
+// router.get("/getXINRBooks", BookController.getXINRBooks)
+
+// router.get("/getRandomBooks", BookController.getRandomBooks)
+
+// router.get("/getRandomBooks ", BookController.getRandomBooks)
+
+
+// router.get("/getBooksData", BookController.getBooksData)
+
+//module.exports = router;
