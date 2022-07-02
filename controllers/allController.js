@@ -14,16 +14,15 @@ const isValidRequestBody = function(requestbody) {
     return Object.keys(requestbody).length > 0;
 };
 
-// const isValidObjectId = function (ObjectId){
-// return mongoose.Types.ObjectId.isValid(ObjectId);
-// };
+
 
 ////////////////////createCollege///////////////////////
 
 const createCollege = async function(req, res) {
 
     try {
-        const data = req.body
+        const data = req.body;
+        let nameRegex = /^[a-zA-Z ]{2,30}$/;
 
         if (!isValidRequestBody(data)) {
             res.status(400).send({ status: false, msg: "Invalid request parameters. Please provide college details" });
@@ -38,9 +37,23 @@ const createCollege = async function(req, res) {
             return res.status(400).send({ status: false, msg: "Please enter college name!!" })
         };
 
+        if (!name.match(nameRegex))
+            return res.status(400).send({
+                status: false,
+                msg: " name should have alphabets only",
+            });
+
+
         if (!isValid(fullName)) {
             return res.status(400).send({ status: false, msg: "Please enter college full name!" })
         };
+
+        if (!fullName.match(nameRegex))
+            return res.status(400).send({
+                status: false,
+                msg: "full name should have alphabets only",
+            });
+
 
         if (!isValid(logoLink)) {
             return res.status(400).send({ status: false, msg: "Please enter college logo link!!" })
@@ -78,6 +91,7 @@ const createIntern = async function(req, res) {
 
     try {
         const data = req.body;
+        let nameRegex = /^[a-zA-Z ]{2,30}$/;
 
         if (!isValidRequestBody(data)) {
             res.status(400).send({ status: false, msg: "Invalid request parameters. Please provide intern details" });
@@ -89,6 +103,12 @@ const createIntern = async function(req, res) {
         if (!isValid(name)) {
             return res.status(400).send({ status: false, msg: "Please enter intern's name!!" })
         };
+
+        if (!name.match(nameRegex))
+            return res.status(400).send({
+                status: false,
+                msg: " name should have alphabets only",
+            });
 
         if (!isValid(email)) {
             return res.status(400).send({ status: false, msg: "Please enter email address!!" })
@@ -108,7 +128,7 @@ const createIntern = async function(req, res) {
         };
 
         if (!/^(\+\d{1,3}[- ]?)?\d{10}$/.test(mobile)) {
-            return res.status(400).send({ status: true, msg: "Please enter valid mobile number!" })
+            return res.status(400).send({ status: false, msg: "Please enter valid mobile number!" })
         }
 
         const isMobileNumberAlreadyUsed = await internModel.findOne({ mobile })
@@ -124,13 +144,13 @@ const createIntern = async function(req, res) {
             return res.status(400).send({ status: false, msg: "Please enter college name!!" })
         };
 
-        let isCollegeId = await collegeModel.findOne({ name: data.collegename }).select({ _id: 1 })
+        let isCollegeId = await collegeModel.findOne({ name: data.collegename })
         if (!isCollegeId) {
             return res.status(404).send({ status: false, msg: "This college name does not exist!" })
         }
 
-        let id = isCollegeId._id.toString()
-        data.collegeId = id
+        // let id = isCollegeId._id.toString()
+        // data.collegeId = id
 
         //isDeleted data.collegename
 
@@ -143,12 +163,13 @@ const createIntern = async function(req, res) {
 
 const getCollegeDetails = async function(req, res) {
     try {
-        let collegeName = req.query.name
+        let collegeName = req.query.collegeName
         if (!collegeName) {
             return res.status(404).send({ status: false, msg: "Please provide college name in query." })
         }
 
         const collegedata = await collegeModel.findOne({ name: collegeName }).select({ name: 1, fullName: 1, logoLink: 1 })
+            // console.log(findOne)
         if (!collegedata) {
             return res.status(404).send({ status: false, msg: "No such college data found." });
         }
@@ -158,8 +179,6 @@ const getCollegeDetails = async function(req, res) {
         if (!interndata) {
             return res.status(404).send({ status: false, msg: "No such intern found." })
         }
-
-
         Object.assign(collegedata._doc, { interns: interndata });
         res.status(200).send({ status: true, data: collegedata });
 
