@@ -16,10 +16,14 @@ const isValidString = function(value) {
     if (typeof value === "string" && value.trim().length === 0) return false;
     return true;
 };
+const check = function(arr) {
+    return arr.length > 0;
+};
 
 module.exports = {
     isValidRequestBody,
     isValid,
     isValidObjectId,
-    isValidString
+    isValidString,
+    check
 }

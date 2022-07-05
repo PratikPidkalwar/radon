@@ -138,6 +138,7 @@ const getBlog = async function(req, res) {
 
 
 //Update blogs
+
 const updateDetails = async function(req, res) {
     try {
         let authorIdFromToken = req.authorId;
@@ -238,7 +239,6 @@ const updateDetails = async function(req, res) {
         });
     }
 };
-
 
 const deleteBlogById = async function(req, res) {
     try {
