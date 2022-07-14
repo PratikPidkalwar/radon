@@ -3,20 +3,48 @@ const reviewModel = require("../models/reviewModel");
 const userModel = require("../models/userModel");
 const validator = require("../validator/validator")
 const { default: mongoose } = require("mongoose");
-// const { findOneAndUpdate } = require("../models/bookModel");
-//const ObjectId = mongoose.Types.ObjectId
+const aws = require("aws-sdk")
+    // const { findOneAndUpdate } = require("../models/bookModel");
+    //const ObjectId = mongoose.Types.ObjectId
+
+aws.config.update({
+    accessKeyId: "AKIAY3L35MCRVFM24Q7U",
+    secretAccessKey: "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",
+    region: "ap-south-1"
+})
+
+let uploadFile = async(file) => {
+    return new Promise(function(resolve, reject) {
+        let s3 = new aws.S3({ apiVersion: '2006-03-01' });
+
+        var uploadParams = {
+            ACL: "public-read",
+            Bucket: "classroom-training-bucket",
+            Key: "abc/" + file.originalname,
+            Body: file.buffer
+        }
+
+        s3.upload(uploadParams, function(err, data) {
+            if (err) {
+                return reject({ "error": err })
+            }
+            return resolve(data.Location)
+        })
+    })
+}
 
 const createBook = async function(req, res) {
     try {
         // body ------------------------------------------------------------------------------------------------>
         let body = req.body;
-
+        //let files= req.files
 
 
         const { userId, title, excerpt, category, subcategory, ISBN, releasedAt } = body
         // console.log(body)
-        if (!validator.isValidRequestBody(body)){
-            return res.status(400).send({ status: false, message: "Please provide data" })};
+        if (!validator.isValidRequestBody(body)) {
+            return res.status(400).send({ status: false, message: "Please provide data" })
+        };
         //title------------------------------------------------------------------------------------------->
         if (!validator.isValid(title))
             return res.status(400).send({ status: false, message: "Please provide title" });
@@ -78,6 +106,13 @@ const createBook = async function(req, res) {
         const releasedDate = new Date().toLocaleDateString("af-ZA")
         body.releasedAt = releasedDate
 
+        let files = req.files
+        if (!(files && files.length > 0)) {
+            return res.status(400).send({ status: false, message: " Please Provide The Profile Image" });
+        }
+        const uploadedBookImage = await uploadFile(files[0])
+        body.bookImage = uploadedBookImage
+
         let createData = await bookModel.create(body);
         res.status(201).send({ status: true, message: "Success", data: createData });
     } catch (error) {
@@ -101,8 +136,8 @@ const getBook = async function(req, res) {
                 return res.status(400).send({ status: false, message: "Invalid userId in params." })
             }
         }
-        let booksData=await bookModel.find({isDeleted:false})
-        //Combinations of query params.
+        let booksData = await bookModel.find({ isDeleted: false })
+            //Combinations of query params.
         if (userId || category || subcategory) {
 
             let obj = {};
@@ -130,11 +165,11 @@ const getBook = async function(req, res) {
                 .sort({
                     title: 1
                 });
-                console.log(books)
+            // console.log(books)
             const countBooks = books.length
 
             //If no found by the specific combinations revert error msg ~-> No books found.
-            if (books==false) {
+            if (books == false) {
                 return res.status(404).send({ status: false, message: "No books found" });
             } else {
                 res.status(200).send({
@@ -144,13 +179,13 @@ const getBook = async function(req, res) {
                 })
             }
         } else {
-        //     return res.status(400).send({ status: false, message: "No filters applied." });
-        res.status(200).send({status:true,data:booksData})
+            //     return res.status(400).send({ status: false, message: "No filters applied." });
+            res.status(200).send({ status: true, data: booksData })
         }
- 
-    } catch (err) { 
+
+    } catch (err) {
         return res.status(500).send({ status: false, Error: err.message })
-    } 
+    }
 }
 
 
@@ -160,7 +195,7 @@ const getBookByParams = async function(req, res) {
         let bookid = req.params.bookId
             // if(!bookid){return res.status(400).send({status:false,messsage:"BookId must be provided"})}
 
-        if (!mongoose.Types.ObjectId.isValid(bookid)) { return res.status(400).send({ status: false, msg: 'Please enter correct length of bookId' }) }
+        if (!validator.isValidObjectId(bookid)) { return res.status(400).send({ status: false, msg: 'Please enter correct length of bookId' }) }
         let getBookData = await bookModel.findById({ _id: bookid })
         if (!getBookData) { return res.status(404).send({ status: false, msg: "bookId  not found" }) }
 

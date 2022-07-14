@@ -38,11 +38,11 @@ const isValidPassword = function(password) {
 }
 
 const isValidAddress = function(address) {
-        if (typeof address === 'undefined' || address === null) return false
-        if (Object.keys(address).length === 0) return false
-        return true;
-    }
- 
+    if (typeof address === 'undefined' || address === null) return false
+    if (Object.keys(address).length === 0) return false
+    return true;
+}
+
 
 // ISBN validation
 const isvalidISBN = function(value) {
@@ -71,4 +71,4 @@ const isValidDate = function(date) {
 }
 
 
-module.exports = { isValidName, isValidEmail, isValidMobile, isValidPassword, isValidObjectId, isValidRequestBody, isValid, isValidtitle, isValidDate, isValidAddress, isvalidISBN } 
+module.exports = { isValidName, isValidEmail, isValidMobile, isValidPassword, isValidObjectId, isValidRequestBody, isValid, isValidtitle, isValidDate, isValidAddress, isvalidISBN }
