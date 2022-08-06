@@ -48,7 +48,7 @@ const createOrder = async function (req, res) {
         message: "Order Alredy placed from this cart Or cart is empty",
       });
     }
-    let totalQuantity = items
+    let totalQuantity = items.length
       .map((x) => x.quantity)
       .reduce(function (sum, item) {
         return sum + item.quantity;
@@ -185,3 +185,14 @@ const updateOrder = async function (req, res) {
 };
 
 module.exports = { createOrder, updateOrder };
+
+  // if true :
+        // pending => completed
+        // pending => cancelled
+        // completed => error message
+        // cancelled => error message
+        // if false
+        // pending => completed
+        // completed => error mesaage
+        // cancelled => error message
+        //console.log(orderCartid.cancellable)
