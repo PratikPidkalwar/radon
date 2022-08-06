@@ -62,7 +62,7 @@ const createProducts = async function (req, res) {
         .status(400)
         .send({ status: false, message: "price is required" });
     }
-    if (!/^[0-9]*$/.test(price)) {
+    if (!/\d+(?:[.,]\d{0,2})?/.test(price)) {
       return res
         .status(400)
         .send({ status: false, message: "price is required" });

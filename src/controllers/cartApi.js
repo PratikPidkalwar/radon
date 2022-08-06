@@ -417,7 +417,7 @@ const deleteCart = async function (req, res) {
 
     return res
       .status(200)
-      .send({ status: true, message: "Cart successfully Deleted!" });
+      .send({ status: true, message: "Cart successfully Deleted!" ,data: usercart});
   } catch (err) {
     return res.status(500).send({ status: false, message: err.message });
   }
