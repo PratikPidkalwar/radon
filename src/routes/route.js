@@ -2,6 +2,8 @@
 
 const express = require("express");
 const router = express.Router();
+
+//<<<<<============================ Importing Modules ===============================>>>>>>>>//
 const {
   userRegister,
   loginUser,
@@ -28,19 +30,14 @@ const { createOrder, updateOrder } = require("../controllers/orderApi");
 
 const { Authentication, Authorization } = require("../middlewares/auth");
 
-//------------------- API and Method Routes-------------------//
+//<<<<============================ API and Method Routes =================================>>>>>//
 
 //------------------- User APIs ------------------------------//
 
 router.post("/register", userRegister);
 router.post("/login", loginUser);
 router.get("/user/:userId/profile", Authentication, getProfile);
-router.put(
-  "/user/:userId/profile",
-  Authentication,
-  Authorization,
-  UpdateProfile
-);
+router.put("/user/:userId/profile",UpdateProfile);
 
 //-------------------------- Product APIs ----------------------//
 
@@ -58,6 +55,7 @@ router.get("/users/:userId/cart", Authentication, Authorization, getCart);
 router.delete("/users/:userId/cart", Authentication, Authorization, deleteCart);
 
 //-------------------Order APIs --------------------------------//
+
 router.post("/users/:userId/orders", Authentication, Authorization, createOrder)
 router.put("/users/:userId/orders", Authentication, Authorization, updateOrder);
 
