@@ -50,11 +50,20 @@ const Authorization = async function (req, res, next) {
     const userId = findUserId._id;
 
     if (tokenId.toString() !== userId.toString()) {
+<<<<<<< HEAD
 // <<<<<<< HEAD
       return res.status(403).send({ status: false, message: `This userId: ${userId} not authorized!` });
 // =======
 //       return res.status(403).send({ status: false, message: `This Userid: ${userId} is Unautherized` });
 // >>>>>>> 9e4f20f82b9e78df000ff230030ee04a46224c65
+=======
+      return res
+        .status(403)
+        .send({
+          status: false,
+          message: `This Userid: ${userId} is Unautherized`,
+        });
+>>>>>>> 452e02cfe39164540e02564cb2c17430e21a7615
     }
     next();
   } catch (err) {

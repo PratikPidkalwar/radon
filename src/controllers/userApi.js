@@ -59,16 +59,17 @@ const userRegister = async function (req, res) {
     }
 
     if (!isvalidEmail(email))
-      return res
-        .status(400)
-        .send({ status: false, message: "Invalid Email id." });
+      return res.status(400).send({
+        status: false,
+        message: "Invalid Email id. Ex: example12@gmail.com",
+      });
 
     const checkEmailFromDb = await userModel.findOne({ email: email });
 
     if (checkEmailFromDb) {
       return res.status(400).send({
         status: false,
-        message: `emailId is Exists. Please try another email Id.`,
+        message: `emailId already Exists. Please try another email Id.`,
       });
     }
 
@@ -87,7 +88,7 @@ const userRegister = async function (req, res) {
     if (!moblieRegex(phone))
       return res.status(400).send({
         status: false,
-        message: "Phone number must be a valid Indian number.",
+        message: "Phone number must be a valid Indian number .",
       });
 
     const checkPhoneFromDb = await userModel.findOne({ phone: phone });
@@ -113,13 +114,14 @@ const userRegister = async function (req, res) {
     if (!isValidPassword(password))
       return res.status(400).send({
         status: false,
-        message: `Password ${password}  must include atleast one special character[@$!%?&], one uppercase, one lowercase, one number and should be mimimum 8 to 15 characters long`,
+        message: `Password ${password}  must include atleast one special character[@$!%?&], one uppercase, one lowercase, one number and should be mimimum 8 to 15 characters long for Example:Password@123`,
       });
 
     if (!isValid(address))
       return res
         .status(400)
         .send({ status: false, message: "Address is a mandatory field" });
+
     address = JSON.parse(address);
 
     if (!isValid(address.shipping) || !isValid(address.billing))
@@ -155,7 +157,7 @@ const userRegister = async function (req, res) {
     if (!regexUrl(userImage)) {
       return res.status(400).send({
         status: false,
-        message: "NOt Valid URL created by S3",
+        message: "Not Valid URL created by S3",
       });
     }
 
@@ -248,20 +250,20 @@ const loginUser = async function (req, res) {
           { expiresIn: "24h" }
         );
         // res.setHeader("x-api-key", token);
-        res.setHeader("Authorization", "Bearer ", token);
+        res.setHeader("Authorization", "Bearer", token);
 
-        return res.status(200).send({
+        return res.status(201).send({
           status: true,
           message: "Successfully loggedin",
           userId: user._id,
-          token: token,
+          data: token,
         });
       } else {
         // insert access denied code here
         console.log("Access Denied!");
         return res.status(401).send({
           status: false,
-          message: "loggeding denied ",
+          message: "login denied ",
         });
       }
     }
@@ -276,7 +278,6 @@ const getProfile = async function (req, res) {
   try {
     let userId = req.params.userId;
 
-  
     if (!isValidObjectId(userId)) {
       return res.status(400).send({ status: false, message: "Invalid UserId" });
     }
@@ -315,8 +316,8 @@ const UpdateProfile = async function (req, res) {
       return res
         .status(400)
         .send({ status: false, message: "invalid user Id" });
-    let findUserId = await userModel.findOne({ _id: userId });
-    if (!findUserId)
+
+    if (!checkFromDb)
       return res.status(404).send({ status: false, message: "user not found" });
 
     if (!isValidRequestBody(updateData) && !formData)
@@ -337,13 +338,16 @@ const UpdateProfile = async function (req, res) {
           .status(400)
           .send({ status: false, message: "Provide valid Username" });
       }
+      data["fname"] = fname;
     }
+
     if (lname) {
       if (!isValid(lname)) {
         return res
           .status(400)
           .send({ status: false, message: "Provide valid Username" });
       }
+      data["lname"] = lname;
     }
 
     if (email) {
@@ -361,9 +365,10 @@ const UpdateProfile = async function (req, res) {
       if (!checkFromDb.email) {
         return res.status(400).send({
           status: false,
-          message: `emailId is Exists. Please try another email Id.`,
+          message: `emailId already Exists. Please try another email Id. or For Same don't need to change`,
         });
       }
+      data["email"] = email;
     }
 
     if (phone) {
@@ -373,7 +378,7 @@ const UpdateProfile = async function (req, res) {
           .send({ status: false, message: "phone number is required" });
       }
 
-      if (!isValidPhone(phone))
+      if (!moblieRegex(phone))
         return res.status(400).send({
           status: false,
           message: "Phone number must be a valid Indian number.",
@@ -385,7 +390,9 @@ const UpdateProfile = async function (req, res) {
           message: `${phone} is already in use, Please try a new phone number.`,
         });
       }
+      data["phone"] = phone;
     }
+
     if (password) {
       if (!isValid(password)) {
         return res
@@ -409,7 +416,7 @@ const UpdateProfile = async function (req, res) {
           .status(400)
           .send({ status: false, message: " address is not valid" });
       } else if (address) {
-        let address1 = JSON.parse(address.shipping);
+        let address1 = JSON.parse(address);
 
         if (address1.shipping) {
           const { street, city, pincode } = address1.shipping;

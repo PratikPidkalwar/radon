@@ -39,8 +39,8 @@ const createProducts = async function (req, res) {
         .status(400)
         .send({ status: false, message: "Provide the title Name " });
     }
-   
-    let checkTitle = await productModel.findOne({ title: title });
+
+    let checkTitle = await productModel.findOne({ title: title.toLowerCase() });
     if (checkTitle) {
       return res.status(400).send({
         status: false,
@@ -61,6 +61,7 @@ const createProducts = async function (req, res) {
         .status(400)
         .send({ status: false, message: "price is required" });
     }
+<<<<<<< HEAD
 // <<<<<<< HEAD
 //     if (!/\d+(?:[.,]\d{0,2})?/.test(price)) {
 //       return res
@@ -74,6 +75,13 @@ const createProducts = async function (req, res) {
        .send({ status: false, message: "price Must be in Numbers" });
    }
 // >>>>>>> 9e4f20f82b9e78df000ff230030ee04a46224c65
+=======
+    if (!/\d+(?:[.,]\d{0,2})?/.test(price)) {
+      return res
+        .status(400)
+        .send({ status: false, message: "price Must be in Numbers" });
+    }
+>>>>>>> 452e02cfe39164540e02564cb2c17430e21a7615
 
     if (!isValid(currencyId)) {
       return res
@@ -85,6 +93,7 @@ const createProducts = async function (req, res) {
         .status(400)
         .send({ status: false, message: "CurrencyId should be in INR" });
     }
+
     if (!currencyFormat) {
       return res
         .status(400)
@@ -139,7 +148,7 @@ const createProducts = async function (req, res) {
     const createdProduct = await productModel.create(data);
     return res.status(201).send({
       status: true,
-      message: "Product is Created Successfully",
+      message: "Success",
       data: createdProduct,
     });
   } catch (err) {
@@ -277,7 +286,7 @@ const getProducts = async function (req, res) {
 
     return res.status(200).send({
       status: true,
-      message: "Product list",
+      message: "Success",
       data: products,
     });
   } catch (err) {
@@ -370,16 +379,21 @@ const updateProductbyId = async function (req, res) {
         return res
           .status(400)
           .send({ status: false, message: "Enter Valid Title Name" });
-      if (await productModel.findOne({ title: title }))
+
+          let istitle = await productModel.findOne({ title: title.toLowerCase() });
+
+      if (istitle)
         return res
           .status(400)
           .send({ status: false, message: `${title} is already exists` });
+
       let title1 = title
         .split(" ")
         .filter((e) => e)
         .join(" ");
-      data.title = title1;
+      data.title = title1.toLowerCase();
     }
+
     if ("description" in body) {
       if (!isValid(description))
         return res
@@ -467,11 +481,7 @@ const updateProductbyId = async function (req, res) {
         .findById(productId)
         .select({ availableSizes: 1, _id: 0 });
       let value = savedSize["availableSizes"].valueOf();
-      //for (let i = 0; i < sizes.length; i++) {
-      // if (value.includes(sizes[i])) {
-      //   return res.status(400).send({ status: false, message: `Size ${sizes[i]} is already Exists Choose Another One` })
-      // }
-      // else {
+
       let savedata = await productModel.findOneAndUpdate(
         { _id: productId },
         { availableSizes: sizes },
@@ -496,9 +506,11 @@ const updateProductbyId = async function (req, res) {
     }
 
     data.save();
-    res
-      .status(200)
-      .send({ status: false, message: "Updated Successfully", data: data });
+    res.status(200).send({
+      status: true,
+      message: "Update product details is successful",
+      data: data,
+    });
   } catch (err) {
     return res.status(500).send({ status: false, message: err.message });
   }
